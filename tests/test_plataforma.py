@@ -182,6 +182,9 @@ def test_ponte_do_kwin_descarta_o_que_vier_malformado():
     ruins = ('{"janelas": [{"pid": 1, "x": NaN, "y": 0, "w": 9, "h": 9}, {"pid": "x"}, 7, "a",'
              ' {"pid": 1, "x": 0, "y": 0, "w": -5, "h": 9}], "ativa": 3}')
     assert kwin.parse_estado(ruins) == ([], None)
+    assert kwin.parse_cursor("[10, 20.5]") == (10.0, 20.5)
+    assert kwin.parse_cursor("[Infinity, 1]") is None
+    assert kwin.parse_cursor('"oi"') is None
 
 
 @pytest.mark.skipif(kwin is None, reason="Requer Linux (QtDBus)")
