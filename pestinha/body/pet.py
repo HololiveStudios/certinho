@@ -10,7 +10,7 @@ import math
 import random
 import time
 
-from PySide6.QtCore import QRect, QRectF, Qt, Signal
+from PySide6.QtCore import QRect, QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import QCursor, QFont, QPainter
 from PySide6.QtWidgets import QWidget
 
@@ -39,10 +39,16 @@ CX, CY = WIN / 2, WIN / 2 - 6   # centro do corpo dentro da janela
 
 def set_no_activate(widget):
     """Garante que clicar/mostrar a janela não rouba o foco do programa atual (onde o sistema permite)."""
+    _sem_foco(widget)
+    # shortcut: o KDE ignora o pedido antes de assumir a janela; 300 ms basta aqui, trocar por um evento de "mapeada" se falhar
+    QTimer.singleShot(300, lambda: _sem_foco(widget))
+
+
+def _sem_foco(widget):
     try:
         plataforma.sem_foco_nativo(int(widget.winId()))
     except Exception:
-        pass    # sem janela nativa (ex.: teste offscreen)
+        pass    # sem janela nativa (ex.: teste offscreen) ou já destruída
 
 
 def overlay_flags():
