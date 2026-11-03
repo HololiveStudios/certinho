@@ -24,7 +24,7 @@ SERVICO, CAMINHO, INTERFACE = "io.github.pestinha", "/ponte", "io.github.pestinh
 NOME_DO_SCRIPT = "pestinha"
 SCRIPT = Path(__file__).with_name("kwin_ponte.js")
 sem_foco_nativo = linux.sem_foco_nativo     # igual ao X11: as janelas do pet rodam pelo XWayland
-LIMIAR_OCIOSO = 1.0       # segundos parado até o compositor avisar "ocioso"
+LIMIAR_OCIOSO = 0.3       # igual ao limiar de "digitando" (senses e app): sem aviso = input nos últimos 0,3 s
 
 _recebido = {"estado": None, "cursor": None}
 _atalho = []              # callback do atalho, quando registrado
