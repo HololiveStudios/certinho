@@ -10,8 +10,13 @@ Dependências em requirements.txt. Pânico: Ctrl + Alt + Shift + B (desliga tudo
 """
 
 import argparse
+import os
 import shutil
 import sys
+
+# O Wayland não deixa uma janela escolher a própria posição: o pet roda pelo XWayland (os sentidos vêm do KWin).
+if os.environ.get("XDG_SESSION_TYPE") == "wayland":
+    os.environ.setdefault("QT_QPA_PLATFORM", "xcb")
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
