@@ -1,7 +1,7 @@
 """
 KDE Plasma 6 no Wayland: as janelas do pet rodam pelo XWayland (main.py) e os sentidos vêm do KWin.
 
-O Wayland não deixa um programa ver as outras janelas nem o cursor. Um script do KWin (kwin_ponte.js)
+O Wayland não deixa um programa ver as outras janelas. Um script do KWin (kwin_ponte.js)
 manda isso por DBus; o tempo ocioso vem do protocolo ext-idle-notify-v1 (pywayland). Só geometria,
 pid e estado das janelas; nunca títulos. Sem o KWin ou sem pywayland, a leitura vira o valor padrão.
 """
@@ -26,7 +26,7 @@ SCRIPT = Path(__file__).with_name("kwin_ponte.js")
 sem_foco_nativo = linux.sem_foco_nativo     # igual ao X11: as janelas do pet rodam pelo XWayland
 LIMIAR_OCIOSO = 1.0       # segundos parado até o compositor avisar "ocioso"
 
-_recebido = {"estado": None, "cursor": None}
+_recebido = {"estado": None}
 _atalho = []              # callback do atalho, quando registrado
 _ponte = None             # None: não tentou; False: falhou; senão (objeto exportado, interface do KWin)
 _ocioso = None            # None: não tentou; False: falhou; senão _Ocioso
@@ -58,15 +58,6 @@ def parse_estado(texto):
     return janelas, (_janela(dados["ativa"]) if dados.get("ativa") is not None else None)
 
 
-def parse_cursor(texto):
-    """(x, y) a partir de "[x, y]", ou None se malformado."""
-    try:
-        x, y = (float(v) for v in json.loads(texto))
-    except (TypeError, ValueError, OverflowError):
-        return None
-    return (x, y) if math.isfinite(x) and math.isfinite(y) else None
-
-
 def segundos_ocioso(desde, agora):
     """Tempo ocioso: o compositor avisa LIMIAR_OCIOSO depois do último toque, então soma o limiar."""
     return 0.0 if desde is None else agora - desde + LIMIAR_OCIOSO
@@ -79,10 +70,6 @@ class _Ponte(QObject):
     @Slot(str)
     def estado(self, texto):
         _recebido["estado"] = texto
-
-    @Slot(str)
-    def cursor(self, texto):
-        _recebido["cursor"] = texto
 
     @Slot()
     def atalho(self):
@@ -106,7 +93,7 @@ def _iniciar_ponte():
         return None
     kwin.call("start")
     QCoreApplication.instance().aboutToQuit.connect(lambda: kwin.call("unloadScript", NOME_DO_SCRIPT))
-    log("[kwin] ponte ligada: janelas, cursor e atalho vêm do KWin")
+    log("[kwin] ponte ligada: janelas e atalho vêm do KWin")
     return ponte, kwin
 
 
@@ -198,12 +185,6 @@ def janelas_visiveis(excluir, escala=1.0):
     return [(j["id"], tuple(v * escala for v in j["ret"]), j["max"]) for j in _estado()[0]
             if j["pid"] != meu_pid and j["ret"][2] - j["ret"][0] >= linux.LARGURA_MINIMA
             and j["ret"][3] - j["ret"][1] >= linux.ALTURA_MINIMA]
-
-
-def cursor():
-    """Cursor em pixels lógicos, visto pelo KWin (sobre qualquer janela), ou None se a ponte não ligou."""
-    # shortcut: supõe a mesma escala em todos os monitores (Qt pelo XWayland usa uma só); com escalas mistas, converter por tela
-    return parse_cursor(_recebido["cursor"]) if _ligada() and _recebido["cursor"] else None
 
 
 def iniciar_atalho(callback):

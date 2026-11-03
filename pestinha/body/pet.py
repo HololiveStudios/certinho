@@ -269,8 +269,5 @@ class PetWindow(QWidget):
 
 def cursor_pos():
     """Posição atual do cursor em pixels (x, y)."""
-    visto = plataforma.cursor()           # no Wayland, o Qt só vê o cursor sobre as próprias janelas
-    if visto is not None:
-        return visto
     p = QCursor.pos()
     return p.x(), p.y()

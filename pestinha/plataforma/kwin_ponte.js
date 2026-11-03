@@ -36,10 +36,6 @@ workspace.windowAdded.connect(w => { observar(w); enviar(); });
 workspace.windowRemoved.connect(enviar);
 workspace.windowActivated.connect(enviar);
 workspace.currentDesktopChanged.connect(enviar);
-workspace.cursorPosChanged.connect(() => {
-    const p = workspace.cursorPos;
-    callDBus(SERVICO, CAMINHO, INTERFACE, "cursor", JSON.stringify([p.x, p.y]));   // texto: o tipo do número no DBus não importa
-});
 registerShortcut("Pestinha: mostrar", "Pestinha: mostrar ou esconder o pet", "Ctrl+Alt+Shift+B",
                  () => callDBus(SERVICO, CAMINHO, INTERFACE, "atalho"));
 enviar();
