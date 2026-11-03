@@ -51,10 +51,13 @@ fica salvo localmente e muda o jeito dele com o tempo.
 
 ## Requisitos
 
-- Windows 10 ou 11, macOS (Quartz/pyobjc) ou Linux com X11.
+- Windows 10 ou 11, macOS (Quartz/pyobjc), Linux com X11 ou KDE Plasma 6 com Wayland.
 - Python 3.11 ou mais novo.
 - No Linux, para as janelas e o tempo ocioso: `xdotool`, `wmctrl` e `xprintidle`. Sem eles, o pet continua
   andando, mas não enxerga as janelas.
+- No KDE Plasma 6 com Wayland, o pet roda pelo XWayland e um script do KWin, carregado enquanto ele está
+  aberto, informa as janelas, o cursor e o atalho; o tempo ocioso vem do `pywayland`. Não precisa dos
+  comandos do X11.
 - Cerca de 70 MB de RAM com ele rodando.
 
 ## Instalação e uso
@@ -161,7 +164,8 @@ O PyInstaller só gera o executável do sistema onde roda, por isso um Windows n
    python -m PyInstaller --noconfirm --onefile --windowed --name Pestinha --distpath build/onefile --workpath build/work --specpath build --hidden-import win32timezone main.py
    ```
 
-   No macOS e no Linux, use o mesmo comando sem `--windowed` e sem `--hidden-import win32timezone`.
+   No macOS e no Linux, use o mesmo comando sem `--windowed` e sem `--hidden-import win32timezone`. No Linux,
+   acrescente `--add-data "$PWD/pestinha/plataforma/kwin_ponte.js:pestinha/plataforma"` (script do KWin).
 
 3. O resultado fica em `build/onefile/` (`Pestinha.exe` no Windows, `Pestinha` nos outros).
 
@@ -208,7 +212,8 @@ As imagens e os textos de `assets/` não estão cobertos por esta licença
 - macOS e Linux ainda não foram testados numa máquina real: a parte de leitura das janelas e do teclado foi
   escrita e testada só nas partes de texto (ver `tests/test_plataforma.py`).
 - No macOS, o pet precisa da permissão de Acessibilidade para o atalho Ctrl+Alt+Shift+B funcionar.
-- No Linux com Wayland, o pet não enxerga janelas nem o tempo ocioso, e o atalho global não funciona.
+- No Wayland fora do KDE Plasma 6 (GNOME, Sway, Hyprland), o pet não enxerga janelas nem o tempo ocioso, e o
+  atalho global não funciona.
 - Pouco testado com escala de tela acima de 100% e com vários monitores.
 - Jogos em janela sem borda podem não ser detectados como tela cheia.
 - O executável não é assinado; o Windows pode avisar na primeira execução.
