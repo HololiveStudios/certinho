@@ -18,6 +18,9 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt pyinstaller==6.22.3
+      - name: Tempo ocioso no KDE Plasma com Wayland (opcional, fora do requirements.txt)
+        if: runner.os == 'Linux'
+        run: pip install "pywayland>=0.4.19"
       - name: Gerar o executável
         shell: bash
         run: |
