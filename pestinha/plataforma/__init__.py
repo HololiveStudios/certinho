@@ -11,14 +11,18 @@ escolhe o certo na importação. Os retângulos são em pixels físicos (o app d
     janelas_visiveis(excluir, escala)   [(id, (l, t, r, b), maximizada)] de cima para baixo
     sem_foco_nativo(janela_id)   a janela do pet não rouba o foco (quando o sistema permite)
     iniciar_atalho(callback)     Ctrl+Alt+Shift+B; devolve True se registrou
+    cursor()                     (x, y) do cursor visto pelo sistema, ou None para usar o do Qt (só o kwin)
 """
 
+import os
 import sys
 
 if sys.platform == "win32":
     from . import windows as _backend
 elif sys.platform == "darwin":
     from . import macos as _backend
+elif os.environ.get("XDG_SESSION_TYPE") == "wayland" and "KDE" in os.environ.get("XDG_CURRENT_DESKTOP", ""):
+    from . import kwin as _backend
 else:
     from . import linux as _backend
 
@@ -31,3 +35,4 @@ tela_cheia = _backend.tela_cheia
 janelas_visiveis = _backend.janelas_visiveis
 sem_foco_nativo = _backend.sem_foco_nativo
 iniciar_atalho = _backend.iniciar_atalho
+cursor = getattr(_backend, "cursor", lambda: None)
