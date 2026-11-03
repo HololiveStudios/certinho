@@ -56,8 +56,8 @@ fica salvo localmente e muda o jeito dele com o tempo.
 - No Linux, para as janelas e o tempo ocioso: `xdotool`, `wmctrl` e `xprintidle`. Sem eles, o pet continua
   andando, mas não enxerga as janelas.
 - No KDE Plasma 6 com Wayland, o pet roda pelo XWayland e um script do KWin, carregado enquanto ele está
-  aberto, informa as janelas, o cursor e o atalho. Dos comandos do X11, só o `wmctrl` é usado, para tirar as
-  janelas do pet da barra de tarefas. Para o tempo ocioso,
+  aberto, informa as janelas, o cursor e o atalho, e tira as janelas do pet da barra de tarefas. Não precisa
+  dos comandos do X11. Para o tempo ocioso,
   instale também `pip install "pywayland>=0.4.19"` (fica fora do `requirements.txt` porque só tem pacote pronto
   para x86_64 com glibc 2.34 ou mais nova; sem ele, o pet age como se você estivesse sempre ativo).
 - Cerca de 70 MB de RAM com ele rodando.

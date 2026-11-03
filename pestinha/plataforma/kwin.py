@@ -84,6 +84,10 @@ class _Ponte(QObject):
     def cursor(self, texto):
         _recebido["cursor"] = texto
 
+    @Slot(result=int)
+    def pid(self):
+        return os.getpid()
+
     @Slot()
     def atalho(self):
         for callback in _atalho:

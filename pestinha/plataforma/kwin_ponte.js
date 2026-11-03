@@ -25,6 +25,16 @@ function enviar() {
              JSON.stringify({janelas: janelas, ativa: ativa ? resumo(ativa) : null}));
 }
 
+let meuPid = null;
+
+function foraDaBarra(w) {
+    // na hora em que a janela aparece: o pedido do app (wmctrl) chega tarde e ela pisca na barra
+    if (w.pid === meuPid) {
+        w.skipTaskbar = true;
+        w.skipPager = true;
+    }
+}
+
 function observar(w) {
     w.frameGeometryChanged.connect(enviar);
     w.fullScreenChanged.connect(enviar);
@@ -32,7 +42,7 @@ function observar(w) {
 }
 
 workspace.windowList().forEach(observar);
-workspace.windowAdded.connect(w => { observar(w); enviar(); });
+workspace.windowAdded.connect(w => { foraDaBarra(w); observar(w); enviar(); });
 workspace.windowRemoved.connect(enviar);
 workspace.windowActivated.connect(enviar);
 workspace.currentDesktopChanged.connect(enviar);
@@ -42,4 +52,8 @@ workspace.cursorPosChanged.connect(() => {
 });
 registerShortcut("Pestinha: mostrar", "Pestinha: mostrar ou esconder o pet", "Ctrl+Alt+Shift+B",
                  () => callDBus(SERVICO, CAMINHO, INTERFACE, "atalho"));
+callDBus(SERVICO, CAMINHO, INTERFACE, "pid", pid => {
+    meuPid = pid;
+    workspace.windowList().forEach(foraDaBarra);
+});
 enviar();
