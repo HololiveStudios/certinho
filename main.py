@@ -74,6 +74,13 @@ def main():
     log_module.setup(paths.log)
     log_module.capturar_erros()
     log_module.log(f"[qt] plataforma: {app.platformName()}")   # xcb = XWayland; wayland = o pet não consegue se mover
+    if app.platformName() == "wayland":
+        # no Wayland nativo a janela não escolhe a própria posição: o pet ficaria parado no meio da tela
+        QMessageBox.critical(None, config.APP_NOME,
+                             f"O {config.APP_NOME} precisa do XWayland para andar pela tela no Wayland.\n\n"
+                             "Instale o XWayland (no Arch e no CachyOS: xorg-xwayland) e abra de novo. "
+                             "Se você definiu QT_QPA_PLATFORM=wayland, abra sem essa variável.")
+        return 1
     trava = travar_instancia(paths)
     if trava is None:
         QMessageBox.information(None, config.APP_NOME, f"O {config.APP_NOME} já está aberto. Procure o ícone na bandeja.")

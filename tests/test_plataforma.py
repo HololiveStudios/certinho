@@ -191,3 +191,21 @@ def test_ponte_do_kwin_descarta_o_que_vier_malformado():
 def test_tempo_ocioso_do_wayland_soma_o_limiar():
     assert kwin.segundos_ocioso(None, 100.0) == 0.0
     assert kwin.segundos_ocioso(40.0, 100.0) == 60.0 + kwin.LIMIAR_OCIOSO
+
+
+def test_no_wayland_nativo_o_app_avisa_e_nao_abre(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    from PySide6.QtWidgets import QApplication
+    from pestinha.paths import Paths
+    QApplication.instance() or QApplication([])      # face_icon() precisa de um app de verdade
+    import main as main_mod
+    avisos, abriu = [], []
+    monkeypatch.setattr(main_mod, "QApplication", lambda argv: SimpleNamespace(
+        setQuitOnLastWindowClosed=lambda v: None, setWindowIcon=lambda i: None, exec=lambda: 0,
+        platformName=lambda: "wayland"))
+    monkeypatch.setattr(main_mod, "Paths", lambda: Paths(root=tmp_path))
+    monkeypatch.setattr(main_mod.QMessageBox, "critical", lambda *a: avisos.append(a[2]))
+    monkeypatch.setattr(main_mod, "PestinhaApp", lambda *a: abriu.append(True))
+    monkeypatch.setattr(sys, "argv", ["main.py", "--direto"])
+    assert main_mod.main() == 1
+    assert abriu == [] and "XWayland" in avisos[0]

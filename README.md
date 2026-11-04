@@ -55,6 +55,7 @@ fica salvo localmente e muda o jeito dele com o tempo.
 - Python 3.11 ou mais novo.
 - No Linux, para as janelas e o tempo ocioso: `xdotool`, `wmctrl` e `xprintidle`. Sem eles, o pet continua
   andando, mas não enxerga as janelas.
+- No Wayland, o pet precisa do XWayland (no Arch e no CachyOS: `xorg-xwayland`); sem ele, avisa e não abre.
 - No KDE Plasma 6 com Wayland, o pet roda pelo XWayland e um script do KWin, carregado enquanto ele está
   aberto, informa as janelas, o cursor e o atalho, e tira as janelas do pet da barra de tarefas. Não precisa
   dos comandos do X11. Para o tempo ocioso,
