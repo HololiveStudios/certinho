@@ -15,13 +15,15 @@ import shutil
 import sys
 
 # O Wayland não deixa uma janela escolher a própria posição: o pet roda pelo XWayland (os sentidos vêm do KWin).
+# A escolha é feita aqui, e não pela lista "xcb;wayland": num CachyOS/KDE essa lista acabou no Wayland nativo.
 if os.environ.get("XDG_SESSION_TYPE") == "wayland":
-    os.environ.setdefault("QT_QPA_PLATFORM", "xcb;wayland")   # sem XWayland, cai no Wayland nativo
+    os.environ.setdefault("QT_QPA_PLATFORM", "xcb" if os.environ.get("DISPLAY") else "wayland")
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
 
 from pestinha import config
+from pestinha.log import log
 from pestinha.paths import Paths
 from pestinha.settings_store import SettingsStore
 from pestinha.app import PestinhaApp
@@ -44,6 +46,7 @@ def main():
     args = parser.parse_args()
 
     app = QApplication(sys.argv)
+    log(f"[qt] plataforma: {app.platformName()}")   # xcb = XWayland; wayland = o pet não consegue se mover
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(face_icon())
 
